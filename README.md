@@ -208,6 +208,34 @@ undifferentiated, or compete mainly on price.
 
 ![Fisher investment agent evidence and reflection pipeline](assets/agent_design.png)
 
+Text-only version of the workflow:
+
+```text
+Company-specific LangChain tools
+                |
+                v
+Deterministic evidence planning and routing
+                |
+                +-- Point 4  -> customer / sales_team
+                +-- Point 7  -> current_employee / working_conditions
+                +-- Point 11 -> competitor / competitive_edge
+                |
+                v
+Three interviews executed in parallel
+                |
+                v
+Initial DeepSeek PASS/FAIL classification
+                |
+                v
+Python JSON parsing and verdict validation
+                |
+                v
+Independent DeepSeek reflection against the original quotations
+                |
+                v
+Final verdicts and summary -> results.csv
+```
+
 The design combines planning, routing, parallel tool calls, prompt chaining,
 and reflection. A deterministic plan routes each Fisher point to a role and
 topic known to contain relevant evidence. The three LangChain interview tools
