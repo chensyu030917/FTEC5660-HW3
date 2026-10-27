@@ -171,13 +171,75 @@ companies with the same tools and the same answer key rules, but different
 names and wording, and scores your 3 points only.
 
 ## Homework 3 solution:
-> to students: this is your report, see the homework description.
 
 ### My 3 points and rules
-> for each point: why you chose it, your PASS rule in one or two sentences, and the evidence it uses. Quote Fisher where it helps.
+
+I chose Points 4, 7, and 11 because they examine three different parts of a
+company that are difficult to assess from management's statements alone: how
+customers experience the sales organization, how employees experience the
+workplace, and how competitors view the company's advantages. These points
+also fit Fisher's scuttlebutt approach because informed outsiders and
+employees can provide direct evidence. One knowledgeable interview is used
+for each point, so the agent uses only 3 of the 10 permitted interviews per
+company.
+
+**Point 4 — Above-average sales organization.** The agent interviews a
+`customer` about the `sales_team`. It returns PASS when the customer describes
+the salespeople as knowledgeable, proactive, consultative, or responsive. It
+returns FAIL when the sales process is mainly transactional, the salespeople
+know little about the products, change frequently, or leave the customer to
+seek advice elsewhere.
+
+**Point 7 — Outstanding labour and personnel relations.** The agent interviews
+a `current_employee` about `working_conditions`. It returns PASS when the
+evidence indicates fair treatment, good retention, sustainable working
+conditions, and management attention to workplace problems. It returns FAIL
+when the employee reports persistent excessive overtime, frequent departures,
+poor morale, unresolved pay disputes, or possible labour action.
+
+**Point 11 — An important advantage over competitors.** The agent interviews a
+`competitor` about the `competitive_edge`. It returns PASS when the evidence
+shows a durable advantage, such as difficult-to-copy know-how, a strong
+installed base, customer loyalty, or another meaningful barrier to imitation.
+It returns FAIL when the products are easy to copy, interchangeable,
+undifferentiated, or compete mainly on price.
 
 ### Design
-> a visualization of your agent design and one paragraph describing it.
+
+![Fisher investment agent evidence and reflection pipeline](assets/agent_design.png)
+
+The design combines planning, routing, parallel tool calls, prompt chaining,
+and reflection. A deterministic plan routes each Fisher point to a role and
+topic known to contain relevant evidence. The three LangChain interview tools
+are invoked concurrently, and each quotation is kept next to the point it is
+allowed to support. The first `deepseek-v4-flash` call applies explicit
+PASS/FAIL rules and produces structured JSON. A second model call acts as an
+independent reviewer: it compares the draft with the original quotations and
+corrects contradictions. Python then validates that all three selected points
+have valid verdicts. If reflection fails, the valid initial answer is retained;
+if a company fails completely, the error is contained so that the remaining
+companies can still be processed. Up to four companies are processed in
+parallel to reduce runtime without creating excessive simultaneous API calls.
+The database and document tools are not needed for these three selected points
+because the assignment identifies interviews as their direct evidence source.
 
 ### Results
-> your point score on `public_test`, the companies where your verdicts disagree with the public answers, and why.
+
+The agent was evaluated on all 20 companies in `public_test`. It made 60
+point-level decisions and used exactly three interviews per company.
+
+| Metric | Result |
+| --- | ---: |
+| Companies processed | 20 |
+| Point verdicts | 60 |
+| Correct verdicts | 60/60 |
+| Balanced point score | 100.0% |
+| Interviews per company | 3 |
+
+There were no disagreements with the public answers, so there are no
+misclassified companies to analyse. The result suggests that the selected
+interview roles and topics provide direct evidence for these three points and
+that the PASS/FAIL rules separate the public examples clearly. The private
+test uses different companies and wording, so the prompts describe the
+underlying positive and negative conditions rather than matching company names
+or memorising public answers.
